@@ -122,3 +122,16 @@ $ make list
 - [Схема: Локальная инсталляция бэкенда](https://gitlab.dvmn.org/root/fastapi-articles/-/wikis/fastai/backend_local_installation.drawio.png)
 - [Схема: Prod инсталляция бэкенда](https://gitlab.dvmn.org/root/fastapi-articles/-/wikis/fastai/backend_prod_installation.drawio.png)
 - [Схема: Декомпозиция бэкенда по подсистемам](https://gitlab.dvmn.org/root/fastapi-articles/-/wikis/fastai/backend_decomposition.drawio.png)
+
+## Подключение фронтенда для локальной разработки
+
+1. Скачайте архив со скомпилированным фронтендом из материалов проекта.
+2. Распакуйте его в корень репозитория в папку `frontend/`.
+3. Создайте файл `frontend/frontend-settings.json` с содержимым:
+```
+{
+  "backendBaseUrl": "/frontend-api"
+}
+```
+4. Добавьте папку с фронтендом `/frontend` в ` .gitignore`
+5. Запустите сервер командой `fastapi dev src/main.py`.
