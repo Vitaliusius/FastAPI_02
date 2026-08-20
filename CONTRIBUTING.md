@@ -116,3 +116,9 @@ $ uv lock
 $ make list
 ...
 ```
+## Архитектура и схемы приложения
+
+Перед внесением изменений ознакомьтесь со схемами архитектуры:
+- [Схема: Локальная инсталляция бэкенда](https://gitlab.dvmn.org/root/fastapi-articles/-/wikis/fastai/backend_local_installation.drawio.png)
+- [Схема: Prod инсталляция бэкенда](https://gitlab.dvmn.org/root/fastapi-articles/-/wikis/fastai/backend_prod_installation.drawio.png)
+- [Схема: Декомпозиция бэкенда по подсистемам](https://gitlab.dvmn.org/root/fastapi-articles/-/wikis/fastai/backend_decomposition.drawio.png)
