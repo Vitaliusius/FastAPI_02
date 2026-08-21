@@ -111,6 +111,11 @@ dependencies = [
     { name = "ruff" },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "editorconfig-checker" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "editorconfig-checker", specifier = "==3.2.1" },
@@ -118,6 +123,9 @@ requires-dist = [
     { name = "pre-commit", specifier = ">=4.3.0" },
     { name = "ruff", specifier = "==0.11.13" },
 ]
+
+[package.metadata.requires-dev]
+dev = [{ name = "editorconfig-checker", specifier = ">=3.2.1" }]
 
 [[package]]
 name = "fastapi"
