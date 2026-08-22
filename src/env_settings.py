@@ -16,16 +16,18 @@ class AppSettings(BaseSettings):
     deepseek_api_key: SecretStr
     deepseek_base_url: HttpUrl = HttpUrl("https://api.deepseek.com/v1")
     deepseek_model: str = "deepseek-chat"
-    deepseek_max_connections: PositiveInt | None = 5
+    deepseek_max_connections: PositiveInt | None = None
+    deepseek_timeout: PositiveInt = 20
 
-    unsplash_api_key: SecretStr = Field(
+    unsplash_api_key: SecretStr | None = Field(
+        default=None,
         validation_alias=AliasChoices(
             "unsplash_api_key",
             "unsplash_client_id",
             "unsplash_client_key",
-        )
+        ),
     )
-    unsplash_max_connections: PositiveInt | None = 5
+    unsplash_max_connections: PositiveInt | None = None
     unsplash_timeout: PositiveInt = 20
 
 

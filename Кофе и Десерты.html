@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кофейня Карета</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            overflow-x: hidden;
+        }
+        .parallax {
+            background-image: url('https://images.unsplash.com/photo-1731491816571-e8bfc0294ec1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDM4MjQ2fDB8MXxzZWFyY2h8MXx8JUQwJUJBJUQwJUJFJUQxJTg0JUQwJUI1JUQwJUI5JUQwJUJEJUQxJThGJTJDJUQxJTgzJUQxJThFJUQxJTgyJTJDJUQwJUI0JUQwJUI1JUQxJTgxJUQwJUI1JUQxJTgwJUQxJTgyJUQxJThCJTJDJUQwJUJBJUQwJUJFJUQxJTg0JUQwJUI1JTJDJUQwJUJCJUQwJUIwJUQwJUJEJUQwJUI0JUQwJUI0JUQwJUI4JUQwJUJEJUQwJUIzfGVufDB8fHx8MTc4NzM5OTAyN3ww&ixlib=rb-4.1.0&q=80&w=1080');
+            height: 100vh;
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        .header {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 3em;
+            animation: fadeIn 2s;
+        }
+        h2 {
+            font-size: 2em;
+            color: #8B4513;
+            animation: fadeIn 2s 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .content {
+            padding: 20px;
+            text-align: center;
+        }
+        .images {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .image {
+            margin: 10px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .image img {
+            width: 300px;
+            height: auto;
+            transition: transform 0.3s;
+        }
+        .image img:hover {
+            transform: scale(1.05);
+        }
+        footer {
+            background-color: #8B4513;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="parallax"></div>
+    <div class="header">
+        <h1>Добро пожаловать в кофейню</h1>
+        <h2>Наши восхитительные десерты</h2>
+    </div>
+    <div class="content">
+        <div class="images">
+            <div class="image">
+                <img src="https://images.unsplash.com/photo-1707248507197-b931f9114cee?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDM4MjQ2fDB8MXxzZWFyY2h8Mnx8JUQwJUJBJUQwJUJFJUQxJTg0JUQwJUI1JUQwJUI5JUQwJUJEJUQxJThGJTJDJUQxJTgzJUQxJThFJUQxJTgyJTJDJUQwJUI0JUQwJUI1JUQxJTgxJUQwJUI1JUQxJTgwJUQxJTgyJUQxJThCJTJDJUQwJUJBJUQwJUJFJUQxJTg0JUQwJUI1JTJDJUQwJUJCJUQwJUIwJUQwJUJEJUQwJUI0JUQwJUI0JUQwJUI4JUQwJUJEJUQwJUIzfGVufDB8fHx8MTc4NzM5OTAyN3ww&ixlib=rb-4.1.0&q=80&w=1080" alt="Десерт 1">
+            </div>
+            <div class="image">
+                <img src="https://images.unsplash.com/photo-1629131530695-873d0250263f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDM4MjQ2fDB8MXxzZWFyY2h8M3x8JUQwJUJBJUQwJUJFJUQxJTg0JUQwJUI1JUQwJUI5JUQwJUJEJUQxJThGJTJDJUQxJTgzJUQxJThFJUQxJTgyJTJDJUQwJUI0JUQwJUI1JUQxJTgxJUQwJUI1JUQxJTgwJUQxJTgyJUQxJThCJTJDJUQwJUJBJUQwJUJFJUQxJTg0JUQwJUI1JTJDJUQwJUJCJUQwJUIwJUQwJUJEJUQwJUI0JUQwJUI0JUQwJUI4JUQwJUJEJUQwJUIzfGVufDB8fHx8MTc4NzM5OTAyN3ww&ixlib=rb-4.1.0&q=80&w=1080" alt="Десерт 2">
+            </div>
+            <div class="image">
+                <img src="https://images.unsplash.com/photo-1582732958644-49b1c7b7d591?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDM4MjQ2fDB8MXxzZWFyY2h8NHx8JUQwJUJBJUQwJUJFJUQxJTg0JUQwJUI1JUQwJUI5JUQwJUJEJUQxJThGJTJDJUQxJTgzJUQxJThFJUQxJTgyJTJDJUQwJUI0JUQwJUI1JUQxJTgxJUQwJUI1JUQxJTgwJUQxJTgyJUQxJThCJTJDJUQwJUJBJUQwJUJFJUQxJTg0JUQwJUI1JTJDJUQwJUJCJUQwJUIwJUQwJUJEJUQwJUI0JUQwJUI0JUQwJUI4JUQwJUJEJUQwJUIzfGVufDB8fHx8MTc4NzM5OTAyN3ww&ixlib=rb-4.1.0&q=80&w=1080" alt="Десерт 3">
+            </div>
+        </div>
+    </div>
+    <footer>
+        <p>© 2026 Кофейня Карета. Все права защищены.</p>
+    </footer>
+</body>
+</html>
