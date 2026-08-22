@@ -32,3 +32,20 @@ UNSPLASH_API_KEY — Access Key для Unsplash API. Получить можно
 ```bash
 uv run python src/env_settings.py
 ```
+
+Для работы с S3-хранилищем (MinIO) добавьте в `.env`:
+* `S3_ENDPOINT_URL` — адрес S3 API (по умолчанию `http://localhost:9000`).
+* `S3_BUCKET_NAME` — имя бакета для хранения сайтов (по умолчанию `sites`).
+* `S3_ACCESS_KEY` — ключ доступа (MinIO root user).
+* `S3_SECRET_KEY` — секретный ключ (MinIO root password).
+
+### Запуск MinIO (S3-хранилище)
+
+1. Скачайте бинарник MinIO для вашей ОС с официального сайта.
+2. Запустите сервер:
+```bash
+set MINIO_ROOT_USER=admin
+set MINIO_ROOT_PASSWORD=password123
+minio.exe server minio_data --console-address ":9001" --address ":9000"
+```
+3. Откройте веб-консоль http://localhost:9001, создайте бакет sites и сделайте его публичным (Public / Read-Only).

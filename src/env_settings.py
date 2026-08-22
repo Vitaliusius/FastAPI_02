@@ -30,6 +30,11 @@ class AppSettings(BaseSettings):
     unsplash_max_connections: PositiveInt | None = None
     unsplash_timeout: PositiveInt = 20
 
+    s3_endpoint_url: HttpUrl = HttpUrl("http://localhost:9000")
+    s3_bucket_name: str = "sites"
+    s3_access_key: str
+    s3_secret_key: SecretStr
+
 
 if __name__ == "__main__":
     settings = AppSettings()

@@ -1,20 +1,19 @@
 fail_fast: true
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
+    rev: v5.0.0
     hooks:
       - id: check-added-large-files
 
-  - repo: local
+  - repo: https://github.com/editorconfig-checker/editorconfig-checker.python
+    rev: 3.2.0
     hooks:
       - id: editorconfig-checker
-        name: editorconfig-checker
-        entry: ec src/
-        language: system
-        pass_filenames: no
 
+  - repo: local
+    hooks:
       - id: linters-ruff
         name: ruff
-        entry: ruff check ./src
+        entry: uv run ruff check ./src
         language: system
         pass_filenames: no
