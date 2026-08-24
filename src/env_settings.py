@@ -1,5 +1,16 @@
+from typing import Literal
+
 from pydantic import AliasChoices, BaseModel, Field, HttpUrl, PositiveInt, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class GotenbergSettings(BaseModel):
+    endpoint_url: HttpUrl
+    width: PositiveInt = 1000
+    format: Literal["png", "jpeg", "webp"] = "png"
+    max_connections: PositiveInt = 5
+    timeout: float = 10.0
+    wait_delay: float = 8.0
 
 
 class S3Settings(BaseModel):
@@ -54,6 +65,8 @@ class AppSettings(BaseSettings):
     unsplash_timeout: PositiveInt = 20
 
     s3: S3Settings
+
+    gotenberg: GotenbergSettings
 
 
 if __name__ == "__main__":

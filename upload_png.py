@@ -1,5 +1,7 @@
 import asyncio
+
 from aioboto3 import Session
+
 from src.env_settings import AppSettings
 
 SAMPLE_PNG = (

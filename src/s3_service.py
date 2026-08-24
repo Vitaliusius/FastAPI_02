@@ -50,6 +50,22 @@ class S3StorageService:
         return view_url, download_url
 
     @classmethod
-    def get_screenshot_url(cls, filename: str = "screenshot.png") -> str:
+    def get_screenshot_url(cls, filename: str = "index.png") -> str:
         base_endpoint = str(settings.s3.endpoint_url).rstrip("/")
         return f"{base_endpoint}/{settings.s3.bucket_name}/{filename}"
+
+    @classmethod
+    async def upload_file(
+        cls,
+        file_bytes: bytes,
+        filename: str,
+        content_type: str = "text/html",
+    ) -> None:
+        async with cls.get_client() as s3:
+            await s3.put_object(
+                Bucket=settings.s3.bucket_name,
+                Key=filename,
+                Body=file_bytes,
+                ContentType=content_type,
+                ContentDisposition="inline",
+            )

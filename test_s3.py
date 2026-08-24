@@ -2,6 +2,7 @@ import asyncio
 from pathlib import Path
 
 import aioboto3
+
 from src.env_settings import AppSettings
 
 settings = AppSettings()
