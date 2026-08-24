@@ -21,5 +21,5 @@ dev = [
 ]
 
 [tool.uv.sources]
-html-page-generator = { git = "https://github.com/devmanorg/html-page-generator.git" }
 gotenberg-api = { git = "https://github.com/devmanorg/gotenberg-api.git" }
+html-page-generator = { git = "https://github.com/devmanorg/html-page-generator.git" }

@@ -6,11 +6,26 @@
 в документе [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 Требования к окружению: Python 3.13.*, установленный `uv`.
+## Запуск приложения (Windows)
+
+Для запуска бэкенда в среде Windows (через Git Bash или PowerShell) выполните:
 Команда запуска сервера:
 ```bash
-uv run uvicorn src.main:app --reload --host 127.0.0.1 --port 8000
+uv run python -m uvicorn src.main:app --reload --host 127.0.0.1 --port 8000
 ```
 Адрес приложения: http://127.0.0.1:8000/
+
+Интерактивная документация Swagger UI: http://127.0.0.1:8000/docs
+
+Как выполнить проверку в терминале:
+
+1. Запустите сервер:
+```bash
+   uv run python -m uvicorn src.main:app --reload --host 127.0.0.1 --port 8000
+```
+Убедитесь, что в выводе терминала нет ошибок (`Application startup complete, Uvicorn running on [http://127.0.0.1:8000](http://127.0.0.1:8000)`).
+
+Откройте [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) в браузере.
 
 ## Настройка переменных окружения
 Для конфигурации бэкенда используется файл .env в корне проекта.
@@ -20,7 +35,7 @@ uv run uvicorn src.main:app --reload --host 127.0.0.1 --port 8000
 ```Bash
 cp example.env .env
 ```
-Убедитесь, что файл .env добавлен в .gitignore и не попадет в репозиторий.
+Убедитесь, что файл .env добавлен в `.gitignore` и не попадет в репозиторий.
 
 Описание переменных
 ```
@@ -47,6 +62,16 @@ S3__CONNECT_TIMEOUT — таймаут подключения к S3 в секу�
 S3__READ_TIMEOUT — таймаут чтения данных из S3 в секундах (положительное число, по умолчанию: 10).
 S3__MAX_CONNECTIONS — максимальный лимит одновременных подключений (положительное число, по умолчанию: 10).
 ```
+Групповые настройки Gotenberg API:
+Все переменные для Gotenberg объединены в группу с префиксом GOTENBERG__ (двойное подчёркивание):
+````
+GOTENBERG__ENDPOINT_URL — Обязательно. Ссылка на веб-сервис API Gotenberg (например: https://demo.gotenberg.dev).
+GOTENBERG__WIDTH — ширина области для формирования скриншота в пикселях (по умолчанию: 1000).
+GOTENBERG__FORMAT — формат изображения: png, jpeg или webp (по умолчанию: png).
+GOTENBERG__MAX_CONNECTIONS — лимит на количество одновременных подключений (по умолчанию: 5).
+GOTENBERG__TIMEOUT — таймаут на генерацию скриншота в секундах (по умолчанию: 10.0).
+GOTENBERG__WAIT_DELAY — время ожидания завершения анимации в секундах (по умолчанию: 8.0).
+````
 Пример готового файла .env:
 ```
 DEBUG=True
@@ -65,10 +90,17 @@ S3__BUCKET_NAME=sites
 S3__CONNECT_TIMEOUT=5
 S3__READ_TIMEOUT=10
 S3__MAX_CONNECTIONS=10
+
+GOTENBERG__ENDPOINT_URL=[https://demo.gotenberg.dev](https://demo.gotenberg.dev)
+GOTENBERG__WIDTH=1000
+GOTENBERG__FORMAT=png
+GOTENBERG__MAX_CONNECTIONS=5
+GOTENBERG__TIMEOUT=10.0
+GOTENBERG__WAIT_DELAY=8.0
 ```
 Проверка валидации настроек:
 ```Bash
-uv run python -c "from src.env_settings import AppSettings; print(AppSettings().model_dump_json(indent=2))"
+uv run python -c "from src.env_settings"
 ```
 Запуск MinIO (S3-хранилище)
 Скачайте бинарник MinIO для вашей ОС с официального сайта.

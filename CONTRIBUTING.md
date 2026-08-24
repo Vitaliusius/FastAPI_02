@@ -75,7 +75,6 @@ git commit -m 'Message' --no-verify
 ## Как вести разработку
 
 Код проекта находится в папке `/src`.
-
 Находясь в корневой директории проекта, запустить проект можно командой:
 
 ```shell
@@ -85,9 +84,7 @@ $ fastapi dev src/main.py
 Проект будет работать по адресу http://127.0.0.1:8000/
 
 ### Как установить python-пакет в виртуальное окружение
-
 В качестве менеджера пакетов используется [uv](https://docs.astral.sh/uv/).
-
 Вот пример как добавить в зависимости библиотеку `beautifulsoup4`.
 
 ```shell
@@ -95,7 +92,6 @@ $ uv add beautifulsoup4
 ```
 
 Конфигурационные файлы `pyproject.toml` и `uv.lock` обновятся автоматически.
-
 Аналогичным образом можно удалять python-пакеты:
 
 ```shell
@@ -152,7 +148,7 @@ set MINIO_ROOT_USER=admin
 set MINIO_ROOT_PASSWORD=password123
 minio.exe server minio_data --console-address ":9001" --address ":9000"
 ```
-
+Настройка бакета:
 Откройте панель управления MinIO Console: http://localhost:9001 (логин: admin, пароль: password123).
 Создайте бакет с именем sites (если он еще не создан).
 Установите политику доступа бакета в режим Public (или через настройки бакета: Access Policy -> Public).
@@ -197,20 +193,26 @@ await s3_client.put_object(
     ContentDisposition="inline",
 )
 ```
-### 3.Настройка бакета
-- Откройте веб-консоль MinIO по адресу http://localhost:9001.
 
-- Авторизуйтесь с логином admin и паролем password123.
+## Подключение Gotenberg API
+Для генерации превью-скриншотов сайтов используется API сервиса Gotenberg.
+Для локальной разработки и тестирования используется публичный инстанс: https://demo.gotenberg.dev
+Параметры подключения задаются в .env через префикс GOTENBERG__.
 
-- Создайте новый бакет с именем sites.
+## Раздача статики фронтенда через FastAPI
 
-- Установите политику доступа бакета (Access Policy) в значение Public (или Read-Only).
-
-### 4. Переменные окружения (.env)
-Укажите параметры подключения в вашем .env:
+1. Скачайте архив фронтенда по [ссылке](https://dvmn.org/filer/canonical/1750917104/1034/) и распакуйте в директорию `frontend/` в корне проекта.
+2. В файле `frontend/frontend-settings.json` укажите:
+```json
+{
+  "backendBaseUrl": ""
+}
 ```
-S3_ENDPOINT_URL=http://localhost:9000
-S3_BUCKET_NAME=sites
-S3_ACCESS_KEY=admin
-S3_SECRET_KEY=password123
+Убедитесь, что директория /frontend добавлена в .gitignore.
+Запустите бэкенд:
+
+```Bash
+uv run python -m uvicorn src.main:app --reload
 ```
+Откройте http://127.0.0.1:8000/ в браузере. В браузере откроется графический интерфейс FastAI.
+
