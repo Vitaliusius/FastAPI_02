@@ -135,3 +135,82 @@ $ make list
 ```
 4. Добавьте папку с фронтендом `/frontend` в ` .gitignore`
 5. Запустите сервер командой `fastapi dev src/main.py`.
+
+## Настройка и запуск MinIO S3
+
+Для локальной разработки используется MinIO — S3-совместимое объектное хранилище.
+
+### 1. Установка MinIO
+
+* **Windows:**
+  Скачайте бинарный файл `minio.exe` с [официального сайта MinIO](https://dl.min.io/server/minio/release/windows-amd64/minio.exe) и поместите его в рабочую директорию.
+
+### 2. Запуск сервера
+Запустите сервер с указанием корневых учетных данных и каталога для данных:
+```
+set MINIO_ROOT_USER=admin
+set MINIO_ROOT_PASSWORD=password123
+minio.exe server minio_data --console-address ":9001" --address ":9000"
+```
+
+Откройте панель управления MinIO Console: http://localhost:9001 (логин: admin, пароль: password123).
+Создайте бакет с именем sites (если он еще не создан).
+Установите политику доступа бакета в режим Public (или через настройки бакета: Access Policy -> Public).
+#### Ручная выгрузка 
+Вручную положите в бакет файлы-заглушки:
+Загрузите файл index.html (дефолтная HTML-страница).
+Загрузите файл index.png (или screenshot.png для превью сайта).
+Важно:
+В коде бэкенда для html_url и screenshot_url должны использоваться прямые публичные ссылки на эти файлы (например, http://localhost:9000/sites/index.html и http://localhost:9000/sites/index.png).
+Без рабочих ссылок на эти файлы фронтенд будет выглядеть сломанным (не отобразятся превью и карточки сайтов).
+
+#### Программная выгрузка файлов в S3 (MinIO) из Python-кода
+
+При сохранении сгенерированных страниц и скриншотов через Python-клиент (`aioboto3` / `boto3`) необходимо явно передавать параметры метаданных при вызове `put_object`:
+
+1. **Параметр `ContentDisposition='inline'`**:
+   Обязательно указывайте `ContentDisposition='inline'`, чтобы файл при переходе по ссылке открывался и рендерился напрямую в браузере, а не сохранялся на диск.
+
+2. **MIME-типы (`ContentType`)**:
+   Обязательно задавайте точный MIME-тип в зависимости от формата загружаемого файла:
+   * Для HTML-файлов (`index.html`): `ContentType='text/html'`
+   * Для изображений/скриншотов (`index.png`, `screenshot.png`): `ContentType='image/png'`
+
+Пример кода выгрузки:
+
+```python
+# Выгрузка HTML-страницы
+await s3_client.put_object(
+    Bucket=bucket_name,
+    Key="index.html",
+    Body=html_content.encode("utf-8"),
+    ContentType="text/html",
+    ContentDisposition="inline",
+)
+
+# Выгрузка скриншота
+await s3_client.put_object(
+    Bucket=bucket_name,
+    Key="index.png",
+    Body=screenshot_bytes,
+    ContentType="image/png",
+    ContentDisposition="inline",
+)
+```
+### 3.Настройка бакета
+- Откройте веб-консоль MinIO по адресу http://localhost:9001.
+
+- Авторизуйтесь с логином admin и паролем password123.
+
+- Создайте новый бакет с именем sites.
+
+- Установите политику доступа бакета (Access Policy) в значение Public (или Read-Only).
+
+### 4. Переменные окружения (.env)
+Укажите параметры подключения в вашем .env:
+```
+S3_ENDPOINT_URL=http://localhost:9000
+S3_BUCKET_NAME=sites
+S3_ACCESS_KEY=admin
+S3_SECRET_KEY=password123
+```

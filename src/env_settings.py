@@ -1,5 +1,27 @@
-from pydantic import AliasChoices, Field, HttpUrl, PositiveInt, SecretStr
+from pydantic import AliasChoices, BaseModel, Field, HttpUrl, PositiveInt, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class S3Settings(BaseModel):
+    endpoint_url: HttpUrl = Field(
+        default=HttpUrl("http://localhost:9000"),
+        description="Адрес MinIO API",
+    )
+    access_key: SecretStr = Field(description="Логин MinIO")
+    secret_key: SecretStr = Field(description="Пароль MinIO")
+    bucket_name: str = Field(default="sites", description="Имя бакета")
+    connect_timeout: PositiveInt = Field(
+        default=5,
+        description="Таймаут подключения в секундах",
+    )
+    read_timeout: PositiveInt = Field(
+        default=10,
+        description="Таймаут чтения в секундах",
+    )
+    max_connections: PositiveInt = Field(
+        default=10,
+        description="Лимит одновременных подключений",
+    )
 
 
 class AppSettings(BaseSettings):
@@ -9,6 +31,7 @@ class AppSettings(BaseSettings):
         case_sensitive=False,
         validate_default=True,
         extra="ignore",
+        env_nested_delimiter="__",
     )
 
     debug: bool = False
@@ -30,10 +53,7 @@ class AppSettings(BaseSettings):
     unsplash_max_connections: PositiveInt | None = None
     unsplash_timeout: PositiveInt = 20
 
-    s3_endpoint_url: HttpUrl = HttpUrl("http://localhost:9000")
-    s3_bucket_name: str = "sites"
-    s3_access_key: str
-    s3_secret_key: SecretStr
+    s3: S3Settings
 
 
 if __name__ == "__main__":

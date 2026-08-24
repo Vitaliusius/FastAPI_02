@@ -1,12 +1,11 @@
 from collections.abc import AsyncGenerator
-from pathlib import Path
+from contextlib import asynccontextmanager
 from typing import Annotated
 
 import anyio
-from fastapi import FastAPI, HTTPException, Path as FastApiPath, status
+from fastapi import FastAPI, Path as FastApiPath
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, StreamingResponse
-from fastapi.staticfiles import StaticFiles
+from fastapi.responses import StreamingResponse
 from html_page_generator import (
     AsyncDeepseekClient,
     AsyncPageGenerator,
@@ -16,15 +15,18 @@ from openai import APIError, AuthenticationError
 from pydantic import BaseModel, Field
 
 from src.env_settings import AppSettings
+from src.s3_service import S3StorageService
 
 settings = AppSettings()
 
-SITES_DIR = Path("sites")
-SITES_DIR.mkdir(parents=True, exist_ok=True)
-INDEX_FILE = SITES_DIR / "index.html"
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    S3StorageService.get_session()
+    yield
 
 
-app = FastAPI(title="FastAI Site Generator")
+app = FastAPI(title="FastAI Site Generator", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -44,8 +46,12 @@ class UserSchema(BaseModel):
 class SiteSchema(BaseModel):
     id: str
     name: str = "Сайт-визитка"
-    html_url: str = "/sites/index.html"
-    download_url: str = "/sites/index.html"
+    html_url: str
+    download_url: str
+    screenshot_url: str = Field(
+        default="https://placehold.co/600x400?text=Site+Preview",
+        description="Ссылка на скриншот сайта в S3",
+    )
 
 
 class GenerateSitePayload(BaseModel):
@@ -85,10 +91,9 @@ async def generate_site_stream(prompt: str) -> AsyncGenerator[str, None]:
         finally:
             with anyio.CancelScope(shield=True):
                 if generator.html_page and generator.html_page.html_code:
-                    INDEX_FILE.write_text(
-                        generator.html_page.html_code, encoding="utf-8"
+                    await S3StorageService.upload_html(
+                        generator.html_page.html_code, "index.html"
                     )
-                    print(f"[Success] Файл сохранен: {INDEX_FILE.resolve()}")
 
 
 @app.get("/users/me", response_model=UserSchema, summary="Получить текущего пользователя")
@@ -96,31 +101,33 @@ async def get_current_user():
     return UserSchema()
 
 
+@app.get("/sites", response_model=list[SiteSchema], summary="Получить список сайтов пользователя")
+async def get_user_sites():
+    html_url, download_url = S3StorageService.get_file_urls("index.html")
+    screenshot_url = S3StorageService.get_screenshot_url("screenshot.png")
+    return [
+        SiteSchema(
+            id="1",
+            name="Сайт-визитка",
+            html_url=html_url,
+            download_url=download_url,
+            screenshot_url=screenshot_url,
+        )
+    ]
+
+
 @app.get("/sites/{site_id}", response_model=SiteSchema, summary="Получить данные сайта")
 async def get_site_details(
     site_id: Annotated[str, FastApiPath(description="Идентификатор сайта")],
 ):
+    html_url, download_url = S3StorageService.get_file_urls("index.html")
+    screenshot_url = S3StorageService.get_screenshot_url("screenshot.png")
     return SiteSchema(
         id=site_id,
         name="Сайт-визитка",
-        html_url="/sites/index.html",
-        download_url=f"/sites/{site_id}/download",
-    )
-
-
-@app.get("/sites/{site_id}/download", summary="Скачать HTML-файл сайта")
-async def download_site(
-    site_id: Annotated[str, FastApiPath(description="Идентификатор сайта")],
-):
-    if not INDEX_FILE.exists():
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Сайт еще не сгенерирован",
-        )
-    return FileResponse(
-        path=INDEX_FILE,
-        filename="index.html",
-        media_type="text/html",
+        html_url=html_url,
+        download_url=download_url,
+        screenshot_url=screenshot_url,
     )
 
 
@@ -143,9 +150,6 @@ async def generate_site(
         generate_site_stream(user_prompt),
         media_type="text/event-stream",
     )
-
-
-app.mount("/sites", StaticFiles(directory=str(SITES_DIR), html=True), name="sites")
 
 
 if __name__ == "__main__":
