@@ -71,11 +71,7 @@ async def create_site(payload: CreateSitePayload):
         404: {
             "description": "Сайт с указанным идентификатором не найден",
             "model": NotFoundErrorSchema,
-            "content": {
-                "application/json": {
-                    "example": {"detail": "Сайт не найден"}
-                }
-            },
+            "content": {"application/json": {"example": {"detail": "Сайт не найден"}}},
         },
     },
 )
@@ -104,9 +100,7 @@ async def generate_site(
     payload: GenerateSitePayload | None = None,
 ) -> StreamingResponse:
     user_prompt = (
-        payload.prompt
-        if payload and payload.prompt
-        else "Сайт-визитка для автосервиса с прайс-листом и формой записи"
+        payload.prompt if payload and payload.prompt else "Сайт-визитка для автосервиса с прайс-листом и формой записи"
     )
 
     return StreamingResponse(

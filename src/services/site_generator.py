@@ -1,5 +1,5 @@
-from collections.abc import AsyncGenerator
 import logging
+from collections.abc import AsyncGenerator
 
 import httpx
 from gotenberg_api import GotenbergServerError, ScreenshotHTMLRequest
@@ -16,9 +16,7 @@ async def save_html_to_s3(html_code: str, filename: str = "index.html") -> None:
     await upload_html(html_code, filename=filename)
 
 
-async def capture_screenshot(
-    html_code: str, gotenberg_client: httpx.AsyncClient
-) -> bytes:
+async def capture_screenshot(html_code: str, gotenberg_client: httpx.AsyncClient) -> bytes:
     screenshot_request = ScreenshotHTMLRequest(
         index_html=html_code,
         width=settings.gotenberg.width,
@@ -40,6 +38,35 @@ async def save_screenshot_to_s3(
     )
 
 
+async def save_artifacts_after_generation(
+    html_code: str,
+    gotenberg_client: httpx.AsyncClient,
+) -> str | None:
+    try:
+        await save_html_to_s3(html_code, "index.html")
+    except Exception as e:
+        logger.exception("[S3] Ошибка при сохранении HTML")
+        return f"\n[Ошибка S3]: Не удалось сохранить сгенерированный сайт в хранилище ({e}).\n"
+
+    img_format = settings.gotenberg.format
+    screenshot_filename = f"index.{img_format}"
+    content_type = f"image/{img_format}"
+
+    try:
+        screenshot_bytes = await capture_screenshot(html_code, gotenberg_client)
+        await save_screenshot_to_s3(
+            screenshot_bytes=screenshot_bytes,
+            filename=screenshot_filename,
+            content_type=content_type,
+        )
+    except (GotenbergServerError, httpx.HTTPError) as e:
+        logger.warning(f"[Gotenberg] Ошибка генерации скриншота: {e}")
+    except Exception as e:
+        logger.warning(f"[S3] Ошибка сохранения скриншота: {e}")
+
+    return None
+
+
 async def generate_site_stream(
     prompt: str,
     gotenberg_client: httpx.AsyncClient,
@@ -51,29 +78,12 @@ async def generate_site_stream(
             yield chunk
 
         if generator.html_page and generator.html_page.html_code:
-            raw_html = generator.html_page.html_code
-            try:
-                await save_html_to_s3(raw_html, "index.html")
-            except Exception as e:
-                logger.exception("[S3] Ошибка при сохранении HTML")
-                yield f"\n[Ошибка S3]: Не удалось сохранить сгенерированный сайт в хранилище ({e}).\n"
-                return
-
-            img_format = settings.gotenberg.format
-            screenshot_filename = f"index.{img_format}"
-            content_type = f"image/{img_format}"
-
-            try:
-                screenshot_bytes = await capture_screenshot(raw_html, gotenberg_client)
-                await save_screenshot_to_s3(
-                    screenshot_bytes=screenshot_bytes,
-                    filename=screenshot_filename,
-                    content_type=content_type,
-                )
-            except (GotenbergServerError, httpx.HTTPError) as e:
-                logger.warning(f"[Gotenberg] Ошибка генерации скриншота: {e}")
-            except Exception as e:
-                logger.warning(f"[S3] Ошибка сохранения скриншота: {e}")
+            error_message = await save_artifacts_after_generation(
+                generator.html_page.html_code,
+                gotenberg_client,
+            )
+            if error_message:
+                yield error_message
 
     except AuthenticationError:
         yield "\n[Ошибка авторизации]: Проверьте правильность API-ключа в .env\n"

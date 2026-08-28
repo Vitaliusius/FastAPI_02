@@ -29,11 +29,7 @@ async def lifespan(app: FastAPI):
             )
         )
 
-        unsplash_key = (
-            settings.unsplash.api_key.get_secret_value()
-            if settings.unsplash.api_key
-            else "Нет ключа"
-        )
+        unsplash_key = settings.unsplash.api_key.get_secret_value() if settings.unsplash.api_key else "Нет ключа"
         app.state.unsplash_client = await stack.enter_async_context(
             AsyncUnsplashClient.setup(
                 unsplash_key,
