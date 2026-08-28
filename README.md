@@ -41,15 +41,15 @@ cp example.env .env
 ```
 DeepSeek / VseGPT:
 
-DEEPSEEK_API_KEY — Обязательно. API-ключ от сервиса VseGPT (формата sk-or-vv-...).
-DEEPSEEK_BASE_URL — базовый URL шлюза VseGPT (по умолчанию: https://api.vsegpt.ru/v1).
-DEEPSEEK_MODEL — идентификатор модели (по умолчанию: deepseek-chat).
-DEEPSEEK_TIMEOUT — таймаут ожидания ответа от нейросети в секундах.
+DEEPSEEK__API_KEY — Обязательно. API-ключ от сервиса VseGPT (формата sk-or-vv-...).
+DEEPSEEK__BASE_URL — базовый URL шлюза VseGPT (по умолчанию: https://api.vsegpt.ru/v1).
+DEEPSEEK__MODEL — идентификатор модели (по умолчанию: deepseek-chat).
+DEEPSEEK__TIMEOUT — таймаут ожидания ответа от нейросети в секундах.
 
 Unsplash:
-UNSPLASH_CLIENT_ID — Access Key для Unsplash API.
-UNSPLASH_MAX_CONNECTIONS — максимальное количество одновременных подключений.
-UNSPLASH_TIMEOUT — таймаут ожидания ответа Unsplash в секундах.
+UNSPLASH__CLIENT_ID — Access Key для Unsplash API.
+UNSPLASH__MAX_CONNECTIONS — максимальное количество одновременных подключений.
+UNSPLASH__TIMEOUT — таймаут ожидания ответа Unsplash в секундах.
 ```
 Групповые настройки подключения к S3 (MinIO):
 Все переменные для S3 объединены в общую группу с префиксом S3__ (двойное подчеркивание):
@@ -76,12 +76,12 @@ GOTENBERG__WAIT_DELAY — время ожидания завершения ан�
 ```
 DEBUG=True
 
-DEEPSEEK_API_KEY=sk-or-vv-1234567890abcdef
-DEEPSEEK_BASE_URL=[https://api.deepseek.com/v1](https://api.deepseek.com/v1)
-DEEPSEEK_MODEL=deepseek-chat
+DEEPSEEK__API_KEY=sk-or-vv-1234567890abcdef
+DEEPSEEK__BASE_URL=[https://api.deepseek.com/v1](https://api.deepseek.com/v1)
+DEEPSEEK__MODEL=deepseek-chat
 
-UNSPLASH_API_KEY=your_unsplash_access_key
-UNSPLASH_TIMEOUT=20.0
+UNSPLASH__API_KEY=your_unsplash_access_key
+UNSPLASH__TIMEOUT=20.0
 
 S3__ENDPOINT_URL=http://localhost:9000
 S3__ACCESS_KEY=admin
@@ -100,7 +100,7 @@ GOTENBERG__WAIT_DELAY=8.0
 ```
 Проверка валидации настроек:
 ```Bash
-uv run python -c "from src.env_settings"
+uv run python -c "import src.env_settings; print('Settings loaded successfully')"
 ```
 Запуск MinIO (S3-хранилище)
 Скачайте бинарник MinIO для вашей ОС с официального сайта.

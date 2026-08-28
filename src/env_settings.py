@@ -1,3 +1,4 @@
+from functools import lru_cache
 from typing import Literal
 
 from pydantic import AliasChoices, BaseModel, Field, HttpUrl, PositiveInt, SecretStr
@@ -35,6 +36,27 @@ class S3Settings(BaseModel):
     )
 
 
+class DeepseekSettings(BaseModel):
+    api_key: SecretStr
+    base_url: HttpUrl = HttpUrl("https://api.deepseek.com/v1")
+    model: str = "deepseek-chat"
+    max_connections: PositiveInt | None = None
+    timeout: PositiveInt = 20
+
+
+class UnsplashSettings(BaseModel):
+    api_key: SecretStr | None = Field(
+        default=None,
+        validation_alias=AliasChoices(
+            "api_key",
+            "client_id",
+            "client_key",
+        ),
+    )
+    max_connections: PositiveInt | None = None
+    timeout: PositiveInt = 20
+
+
 class AppSettings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -47,28 +69,15 @@ class AppSettings(BaseSettings):
 
     debug: bool = False
 
-    deepseek_api_key: SecretStr
-    deepseek_base_url: HttpUrl = HttpUrl("https://api.deepseek.com/v1")
-    deepseek_model: str = "deepseek-chat"
-    deepseek_max_connections: PositiveInt | None = None
-    deepseek_timeout: PositiveInt = 20
-
-    unsplash_api_key: SecretStr | None = Field(
-        default=None,
-        validation_alias=AliasChoices(
-            "unsplash_api_key",
-            "unsplash_client_id",
-            "unsplash_client_key",
-        ),
-    )
-    unsplash_max_connections: PositiveInt | None = None
-    unsplash_timeout: PositiveInt = 20
-
+    deepseek: DeepseekSettings
+    unsplash: UnsplashSettings
     s3: S3Settings
-
     gotenberg: GotenbergSettings
 
 
-if __name__ == "__main__":
-    settings = AppSettings()
-    print(settings.model_dump_json(indent=2))
+@lru_cache
+def get_settings() -> AppSettings:
+    return AppSettings()
+
+
+settings = get_settings()
