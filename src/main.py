@@ -10,6 +10,7 @@ from html_page_generator import AsyncDeepseekClient, AsyncUnsplashClient
 from src.env_settings import settings
 from src.routes.sites import router as sites_router
 from src.routes.users import router as users_router
+from src.services.s3_service import get_s3_client
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 frontend_dir = BASE_DIR / "frontend"
@@ -44,6 +45,7 @@ async def lifespan(app: FastAPI):
                 settings.deepseek.model,
             )
         )
+        app.state.s3_client = await stack.enter_async_context(get_s3_client())
 
         yield
 
